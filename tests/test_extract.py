@@ -81,9 +81,7 @@ class TestLoadNEOs(unittest.TestCase):
 class TestLoadApproaches(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.neos = load_neos(TEST_NEO_FILE)
         cls.approaches = load_approaches(TEST_CAD_FILE)
-
 
     @classmethod
     def get_first_approach_or_none(cls):
@@ -102,7 +100,7 @@ class TestLoadApproaches(unittest.TestCase):
         self.assertIsInstance(approach, CloseApproach)
 
     def test_approaches_contain_all_elements(self):
-        self.assertEqual(len(self.approaches), len(self.approaches))
+        self.assertEqual(len(self.approaches), 4700)
 
     def test_approach_time_is_datetime(self):
         approach = self.get_first_approach_or_none()

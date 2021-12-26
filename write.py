@@ -10,6 +10,8 @@ You'll edit this file in Part 4.
 import csv
 import json
 
+from helpers import datetime_to_str
+
 
 def write_to_csv(results, filename):
     """Write an iterable of `CloseApproach` objects to a CSV file.
@@ -25,9 +27,15 @@ def write_to_csv(results, filename):
         writer.writeheader()
         for result in results:
             content = {**result.serialize(), **result.neo.serialize()}
-            content["name"] = content["name"] if content["name"] is not None else ""
-            content["potentially_hazardous"] = "True" if content["potentially_hazardous"] else "False"
-            writer.writerow(content)
+            writer.writerow({
+                'datetime_utc': datetime_to_str(content["time"]),
+                'distance_au': content['distance'],
+                'velocity_km_s': content['velocity'],
+                'designation': content["designation"],
+                "name": content["name"] if content['name'] else '',
+                "diameter_km": content["diameter"],
+                "potentially_hazardous": content["hazardous"] == 'hazardous',
+            })
 
 
 def write_to_json(results, filename):
@@ -41,22 +49,21 @@ def write_to_json(results, filename):
     """
     data = []
     for result in results:
+        print(result.__repr__())
         content = {**result.serialize(), **result.neo.serialize()}
-        content["name"] = content["name"] if content["name"] is not None else ""
-        content["potentially_hazardous"] = bool(1) if content["potentially_hazardous"] else bool(0)
         data.append(
             {
-                "datetime_utc": content["datetime_utc"],
-                "distance_au": content["distance_au"],
-                "velocity_km_s": content["velocity_km_s"],
+                "datetime_utc": datetime_to_str(content["time"]),
+                "distance_au": content["distance"],
+                "velocity_km_s": content["velocity"],
                 "neo": {
                     "designation": content["designation"],
-                    "name": content["name"],
-                    "diameter_km": content["diameter_km"],
-                    "potentially_hazardous": content["potentially_hazardous"],
+                    "name": content["name"] if content['name'] else '',
+                    "diameter_km": content["diameter"],
+                    "potentially_hazardous": content["hazardous"] == 'hazardous',
                 },
             }
         )
 
     with open(filename, "w") as outfile:
-        json.dump(data, outfile, indent="\t")
+        json.dump(data, outfile, indent="\t", default=str)

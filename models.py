@@ -66,6 +66,9 @@ class NearEarthObject(JSONEncoder):
     def isBlank(self, object):
         return bool(object and object.strip())
 
+    def serialize(self):
+        return self.__dict__
+
     @property
     def fullname(self):
         """Return a representation of the full name of this NEO."""
@@ -115,6 +118,9 @@ class CloseApproach(JSONEncoder):
 
         # Create an attribute for the referenced NEO, originally None.
         self.neo = None
+
+    def serialize(self):
+        return self.__dict__
 
     def setNeo(self, neo):
         self.neo = neo

@@ -27,9 +27,6 @@ neos_id = {}
 # store all neos
 neos = []
 
-# store all approaces
-approaches = []
-
 
 def load_neos(neo_csv_path):
     """Read near-Earth object information from a CSV file.
@@ -39,7 +36,6 @@ def load_neos(neo_csv_path):
     :return: A collection of `NearEarthObject`s.
     """
 
-    # TODO: Load NEO data from the given CSV file.
 
     if not neo_csv_path:
         raise Exception('Cannot load data, no filename provided')
@@ -68,6 +64,7 @@ def load_neos(neo_csv_path):
 
 
 def load_approaches(cad_json_path):
+    approaches = []
     with open(cad_json_path, 'r') as infile:
         contents = json.load(infile)
     fields = contents['fields']
