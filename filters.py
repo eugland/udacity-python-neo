@@ -1,5 +1,4 @@
-"""Provide filters for querying close approaches and limit the generated
-results.
+"""Provide filters for querying close approaches and limit the generated results.
 
 The `create_filters` function produces a collection of objects that is used by
 the `query` method to generate a stream of `CloseApproach` objects that match
@@ -17,6 +16,7 @@ iterator.
 
 You'll edit this file in Tasks 3a and 3c.
 """
+import itertools
 import operator
 import datetime
 
@@ -40,9 +40,9 @@ class AttributeFilter:
     Concrete subclasses can override the `get` classmethod to provide custom
     behavior to fetch a desired attribute from the given `CloseApproach`.
     """
+
     def __init__(self, op, value):
-        """Construct a new `AttributeFilter` from an binary predicate and a
-        reference value.
+        """Construct a new `AttributeFilter` from an binary predicate and a reference value.
 
         The reference value will be supplied as the second (right-hand side)
         argument to the operator function. For example, an `AttributeFilter`
@@ -73,38 +73,54 @@ class AttributeFilter:
         raise UnsupportedCriterionError
 
     def __repr__(self):
+        """Return a string representing Attribute class' intrinsic."""
         return (f"{self.__class__.__name__}"
                 f"(op=operator.{self.op.__name__},value={self.value})")
 
 
 class Date(AttributeFilter):
+    """Date Filter."""
+
     @classmethod
     def get(cls, approach):
+        """Get item's datetime in certain format for filtering."""
         return datetime.datetime.strptime(approach.time_str,
                                           "%Y-%m-%d %H:%M").date()
 
 
 class Distance(AttributeFilter):
+    """Distance Filter."""
+
     @classmethod
     def get(cls, approach):
+        """Get item's distance value for filtering."""
         return approach.distance
 
 
 class Velocity(AttributeFilter):
+    """Velocity Filter."""
+
     @classmethod
     def get(cls, approach):
+        """Get item's velocity value."""
         return approach.velocity
 
 
 class Hazardous(AttributeFilter):
+    """Hazardous Filter."""
+
     @classmethod
     def get(cls, approach):
+        """Get item's hazardous value."""
         return approach.neo.hazardous
 
 
 class Diameter(AttributeFilter):
+    """Diameter class filter."""
+
     @classmethod
     def get(cls, approach):
+        """Get item's neo's diameter for filtering."""
         return approach.neo.diameter
 
 
@@ -160,9 +176,6 @@ def create_filters(
         potentially hazardous.
     :return: A collection of filters for use with `query`.
     """
-    # TODO: Decide how you will represent your filters.
-
-    # add reuqest fillter to fillter map
     filters_map = []
     if date is not None:
         filters_map.append(Date(operator.eq, date))
@@ -197,8 +210,7 @@ def limit(iterator, n=None):
     :yield: The first (at most) `n` values from the iterator.
     """
     # return iterator  list limit by n
-    iterator = list(iterator)
-    if n is not None and n > 0 and len(iterator) > n:
-        return iterator[0:n]
+    if n and n >= 0:
+        return itertools.islice(iterator, n)
     else:
         return iterator

@@ -1,5 +1,4 @@
-"""A database encapsulating collections of near-Earth objects
-and their close approaches.
+"""A database encapsulating collections of near-Earth objects and their close approaches.
 
 A `NEODatabase` holds an interconnected data set of NEOs and close approaches.
 It provides methods to fetch an NEO by primary designation or by name, as well
@@ -22,6 +21,7 @@ class NEODatabase:
     help fetch NEOs by primary designation or by name and to help speed up
     querying for close approaches that match criteria.
     """
+
     def __init__(self, neos, approaches):
         """Create a new `NEODatabase`.
 
@@ -43,10 +43,6 @@ class NEODatabase:
         self._neos = neos
         self._approaches = approaches
 
-        # TODO: What additional auxiliary data structures will be useful?
-
-        # TODO: Link together the NEOs and their close approaches.
-
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
 
@@ -60,10 +56,8 @@ class NEODatabase:
         :param designation: The primary designation of the NEO to search for.
         :return: The `NearEarthObject` with the desired primary designation,
         or `None`.
-        """
-        # TODO: Fetch an NEO by its primary designation.
 
-        """return neo by reuqest designation
+        return request by designation
         """
         for neo in self._neos:
             if(neo.designation == designation):
@@ -93,8 +87,7 @@ class NEODatabase:
         return None
 
     def query(self, filters=()):
-        """Query close approaches to generate those that match a collection of
-        filters.
+        """Query close approaches to generate those that match a collection of filters.
 
         This generates a stream of `CloseApproach` objects that match all of
         the provided filters.
@@ -109,16 +102,8 @@ class NEODatabase:
         criteria.
         :return: A stream of matching `CloseApproach` objects.
         """
-        # TODO: Generate `CloseApproach` objects that match all of the filters.
         """approaches are fillter by reuqested fillter.Count all request filter
         are passed then append to result. If not then not consider """
-
-        results = []
         for approach in self._approaches:
-            count = 0
-            for fil in filters:
-                if(fil(approach)):
-                    count += 1
-            if(count == len(filters)):
-                results.append(approach)
-        return results
+            if all(fil(approach) for fil in filters):
+                yield approach

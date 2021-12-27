@@ -34,39 +34,39 @@ class NearEarthObject(JSONEncoder):
     initialized to an empty collection, but eventually populated in the
     `NEODatabase` constructor.
     """
+
     def __init__(self, **info):
         """Create a new `NearEarthObject`.
 
         :param info: A dictionary of excess keyword arguments supplied to the
             constructor.
         """
-        # check info is empty or not
-        if (bool(info)):
+        if bool(info):
             # check if info has required keys or not for all
             self.designation = info['pdes'] if 'pdes' in info else None
             self.name = info["name"] if (
-                'name' in info and self.isBlank(info['name'])) else None
-            self.hazardous = True if info["pha"] in ('Y', 'y') else False
-            self.diameter = float(info["diameter"]) if (self.isBlank(
+                'name' in info and self.is_blank(info['name'])) else None
+            self.hazardous = info["pha"] in ('Y', 'y')
+            self.diameter = float(info["diameter"]) if (self.is_blank(
                 info["diameter"])) else float('nan')
-            # Create an empty initial collection of linked approaches.
-            self.approaches = []
         else:
             self.designation = None
             self.name = None
             self.hazardous = False
             self.diameter = float('nan')
-            self.approaches = []
+        self.approaches = set()
 
-    def addCad(self, approach):
-        """ update CAD to in neo object"""
-        self.approaches.append(approach)
-        self.approaches = list(set(self.approaches))
+    def add_cad(self, approach):
+        """Update CAD to in neo object."""
+        self.approaches.add(approach)
 
-    def isBlank(self, object):
-        return bool(object and object.strip())
+    @staticmethod
+    def is_blank(ob):
+        """Check if an boject is valid and strip of its redundant spaces."""
+        return bool(ob and ob.strip())
 
     def serialize(self):
+        """Serialize near earth object into a dict for write out."""
         return self.__dict__
 
     @property
@@ -83,8 +83,7 @@ class NearEarthObject(JSONEncoder):
         )
 
     def __repr__(self):
-        """Return `repr(self)`, a computer-readable string representation of
-        this object."""
+        """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"NearEarthObject("
                 f"designation={self.designation!r}, "
                 f"name={self.name!r}, "
@@ -105,6 +104,7 @@ class CloseApproach(JSONEncoder):
     private attribute, but the referenced NEO is eventually replaced in the
     `NEODatabase` constructor.
     """
+
     def __init__(self, **info):
         """Create a new `CloseApproach`.
 
@@ -120,15 +120,12 @@ class CloseApproach(JSONEncoder):
         self.neo = None
 
     def serialize(self):
+        """Serialize the Close Approach Object to a dict for write out."""
         return self.__dict__
-
-    def setNeo(self, neo):
-        self.neo = neo
 
     @property
     def time_str(self):
-        """Return a formatted representation of this `CloseApproach`'s
-        approach time.
+        """Return a formatted representation of this `CloseApproach`'s approach time.
 
         The value in `self.time` should be a Python `datetime` object.
         While a `datetime` object has a string representation, the default
@@ -149,8 +146,7 @@ class CloseApproach(JSONEncoder):
                 f"and a velocity of {self.velocity:.2f} km/s.")
 
     def __repr__(self):
-        """Return `repr(self)`, a computer-readable string representation of
-            this object."""
+        """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"CloseApproach(time={self.time_str!r}, "
                 f"distance={self.distance:.2f}, "
                 f"velocity={self.velocity:.2f}, "
